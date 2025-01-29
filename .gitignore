@@ -243,7 +243,6 @@ FakesAssemblies/
 *.opt
 
 # Visual Studio LightSwitch build output
-Sanko-Yoğun-Bakım-Yönetimi.sln
 **/*.HTMLClient/GeneratedArtifacts
 **/*.DesktopClient/GeneratedArtifacts
 **/*.DesktopClient/ModelManifest.xml
@@ -280,6 +279,9 @@ __pycache__/
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 
+# Sadece Sanko-Yoğun-Bakım.sln'i dışarıda bırakmak istiyorsanız:
+Sanko-Yoğun-Bakım-Yönetimi.sln
+
 # Local History for Visual Studio Code
 .history/
 
@@ -290,8 +292,5 @@ __pycache__/
 # Ignore all local history of files
 .history
 .ionide
-
-# Out:
-Sanko-Yoğun-Bakım-Yönetimi.sln
 
 # End of https://www.toptal.com/developers/gitignore/api/aspnetcore,visualstudiocode
