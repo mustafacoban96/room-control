@@ -1,9 +1,14 @@
+using System.Text;
 using api.Data;
 using api.Helper;
 using api.Interface;
-using api.Repository;
+using api.Services;
+
+//using api.Repository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,12 +23,32 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => {
 });
 
 
-
+var _authkey = builder.Configuration.GetValue<string>("TokenService:_key");
+builder.Services.AddAuthentication(item =>
+{
+    item.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    item.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(item =>
+{
+    item.RequireHttpsMetadata = true;
+    item.SaveToken = true;
+    item.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authkey)),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+var _tokenservice = builder.Configuration.GetSection("TokenService");
+builder.Services.Configure<TokenService>(_tokenservice);
 // DI
-builder.Services.AddTransient<IUserRepository, UserRepository>();
+//builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<ITokenService,TokenService>();
+builder.Services.AddTransient<IRoleService,RoleService>();
 //
 
-//Auto ampper
 //Auto mapper
 var automapper = new MapperConfiguration(item => item.AddProfile(new AutoMapperHandler()));
 IMapper mapper = automapper.CreateMapper();
@@ -45,7 +70,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+//auth
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
